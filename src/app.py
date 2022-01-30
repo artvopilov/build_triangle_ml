@@ -22,11 +22,13 @@ def scatter_labeled_points(points, labels, color_pos, color_neg):
 
 
 def scatter_points(points, color):
+    if len(points) == 0:
+        return
     plt.scatter(points[:, 0], points[:, 1], color=color)
 
 
-def generate_points():
-    return np.random.random((100, 2)) * 3 - 1.5
+def generate_points(num: int):
+    return np.random.random((num, 2)) * 3 - 1.5
 
 
 def label_points(points, triangle_points):
@@ -55,13 +57,22 @@ def is_point_in_triangle(point1, point2, point3, target_point):
 
 
 if __name__ == '__main__':
-    test_case_points = generate_points()
+    test_case_points = generate_points(num=1000)
     test_case_labels = label_points(test_case_points, TRIANGLE_POINTS)
 
     plot_polygon(TRIANGLE_POINTS)
-    scatter_labeled_points(test_case_points, test_case_labels, 'blue', 'red')
-
+    # scatter_labeled_points(test_case_points, test_case_labels, 'blue', 'red')
+    plt.xlim(-1.5, 1.5)
+    plt.ylim(-1.5, 1.5)
     plt.show()
 
-    triangle_reconstructor = TriangleReconstructor(0.1, 200)
+    triangle_reconstructor = TriangleReconstructor(learning_rate=5, epochs=2000)
     triangle_reconstructor.reconstruct(test_case_points, test_case_labels)
+
+    test_points = generate_points(num=1000)
+    test_labels = triangle_reconstructor.compute_labels(test_points)
+
+    scatter_labeled_points(test_points, test_labels, 'blue', 'red')
+    plt.xlim(-1.5, 1.5)
+    plt.ylim(-1.5, 1.5)
+    plt.show()

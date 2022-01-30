@@ -4,10 +4,10 @@ import torch.nn
 
 
 class TriangleReconstructorModel(torch.nn.Module):
-    _layer1: torch.nn.Module
-    _activation1: torch.nn.Module
-    _layer2: torch.nn.Module
-    _activation2: torch.nn.Module
+    _layer1: torch.nn.Linear
+    _activation1: torch.nn.Sigmoid
+    _layer2: torch.nn.Linear
+    _activation2: torch.nn.Sigmoid
 
     def __init__(self):
         super().__init__()

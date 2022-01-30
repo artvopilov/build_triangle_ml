@@ -21,16 +21,43 @@ class TriangleReconstructor:
         self._epochs = epochs
 
     def reconstruct(self, points: np.array, labels: np.array) -> None:
+        points, labels = self._down_sample_data(points, labels)
         x_train, x_test, y_train, y_test = train_test_split(points, labels, test_size=0.2, random_state=42)
 
-        x_train = torch.Tensor(x_train)
-        x_test = torch.Tensor(x_test)
-        y_train = torch.unsqueeze(torch.Tensor(y_train), dim=-1)
-        y_test = torch.unsqueeze(torch.Tensor(y_test), dim=-1)
+        x_train = torch.tensor(x_train, dtype=torch.float32)
+        x_test = torch.tensor(x_test, dtype=torch.float32)
+        y_train = torch.unsqueeze(torch.tensor(y_train, dtype=torch.float32), dim=-1)
+        y_test = torch.unsqueeze(torch.tensor(y_test, dtype=torch.float32), dim=-1)
 
         self._train(x_train, y_train)
         self._evaluate(x_test, y_test)
-        self._plot(points, labels)
+
+    @staticmethod
+    def _down_sample_data(points: np.array, labels: np.array):
+        pos_labels = labels.sum()
+        neg_labels = len(labels) - pos_labels
+        label_size = min(pos_labels, neg_labels)
+
+        selected_points = []
+        selected_labels = []
+        pos_count, neg_count = 0, 0
+        for i in range(len(points)):
+            point = points[i]
+            label = labels[i]
+
+            if label and pos_count >= label_size:
+                continue
+            if not label and neg_count >= label_size:
+                continue
+
+            pos_count += 1 if label else 0
+            neg_count += 1 if not label else 0
+
+            selected_points.append(point)
+            selected_labels.append(label)
+
+        print(f'Positives: {pos_count}, negatives: {neg_count}, selected: {len(selected_points)}')
+        return np.array(selected_points), np.array(selected_labels)
 
     def _train(self, x: np.array, y: np.array) -> None:
         self._model.train()
@@ -43,7 +70,8 @@ class TriangleReconstructor:
 
             self._optimizer.step()
 
-            print(f'Epoch of training: {epoch + 1}, loss: {loss.item()}')
+            if epoch % 100 == 0:
+                print(f'Epoch of training: {epoch + 1}, loss: {loss.item()}')
 
     def _evaluate(self, x: np.array, y: np.array) -> None:
         self._model.eval()
@@ -51,7 +79,10 @@ class TriangleReconstructor:
         loss = self._loss_function(y_pred, y)
         print('Testing loss', loss.item())
 
-    def _plot(self, points: np.array, labels: np.array):
-        # plt.scatter(points[:, 0], points[:, 1], c=labels, cmap='jet')
-        # plt.show()
-        pass
+    def compute_labels(self, points: np.array) -> np.array:
+        x_test = torch.tensor(points, dtype=torch.float32)
+
+        self._model.eval()
+        y_test = self._model(x_test)
+        labels = y_test.round().detach().numpy()
+        return labels
