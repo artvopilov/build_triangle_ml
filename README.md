@@ -2,7 +2,7 @@
 Building triangle using Logistic regression and simple Perceptron
 
 ### Data generation steps 
-1. Define a triangle with 3 points
+1. Define a triangle with 3 points ![triangle](https://github.com/mister025/BuildTriangleWithML/blob/main/triangle.png)
 2. Generate random points in the triangle's area
 3. Label points automatically
 
