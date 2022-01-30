@@ -5,6 +5,7 @@ Building triangle using Logistic regression and simple Perceptron
 1. Define a triangle with 3 points
 2. Generate random points in the triangle's area
 3. Label points automatically
+
 ![triangle](https://github.com/mister025/BuildTriangleWithML/blob/main/triangle.png)
 
 ### Data preparations steps
@@ -19,10 +20,12 @@ Building triangle using Logistic regression and simple Perceptron
 ### Training
 1. Set learning rate and number of epochs
 2. Use SGD optimizer 
+
 ![training](https://github.com/mister025/BuildTriangleWithML/blob/main/training.png)
 
 ### Evaluation (pictures attached)
 1. Generate random points in the triangle's area
 2. Label points with the model
-3. Plot labelled points 
+3. Plot labelled points
+ 
 ![labelled points](https://github.com/mister025/BuildTriangleWithML/blob/main/model_labelled_data.png)
